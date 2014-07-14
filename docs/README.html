@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; Banyan 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Banyan 0.1.5 documentation" href="index.html" />
+    <link rel="next" title="Augmenting Trees" href="augmenting.html" />
+    <link rel="prev" title="Banyan" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="augmenting.html" title="Augmenting Trees"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Banyan"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This package provides sorted drop-in versions of Python&#8217;s <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#set-types-set-frozenset">set</a> and <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#mapping-types-dict">dict</a> (with optional augmentation). Being tree based, they are not as efficient as hash-based containers (such as Python&#8217;s builtins) for simple lookup and modification. Conversely:</p>
+<ul class="simple">
+<li>(Common Case:) They are far more efficient than them for the case where modifications and lookups are interleaved with sorted iterations.</li>
+<li>(Less Common Case:) Through optional <a class="reference external" href="http://www.cs.cmu.edu/~avrim/451/lectures/lect0927.txt">tree augmentation</a>, they are far more efficient than them for some other kinds of useful queries exploiting the underlying tree structure (e.g., what is the ordinal position of this item in the set? which geometric intervals overlap this interval?).</li>
+</ul>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Supports high-performance algorithms for different use-cases:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-black trees</a> for normal cases</li>
+<li><a class="reference external" href="http://en.wikipedia.org/wiki/Splay_trees">Splay trees</a> for <a class="reference external" href="http://en.wikipedia.org/wiki/Locality_of_reference">temporal locality</a> cases (i.e., when only a small subset of items will actually be accessed in any time period)</li>
+<li><a class="reference external" href="http://www.google.co.il/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;ved=0CDAQFjAA&amp;url=http%3A%2F%2Fwww.lafstern.org%2Fmatt%2Fcol1.pdf&amp;ei=5zMIUY-tHqmP4gSXi4HYBw&amp;usg=AFQjCNHmQS2fP0Gq86UH75QaMwdx0ahnrA&amp;sig2=Ou3LwZJOTZ5VPs-gTZdSzw&amp;bvm=bv.41642243,d.bGE">Sorted lists</a> for infrequent-update cases</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Provides Pythonic interfaces:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Collections are almost entirely drop-in sorted replacements for Python&#8217;s <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#set-types-set-frozenset">set</a> and <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#mapping-types-dict">dict</a></li>
+<li>User defined <tt class="docutils literal"><span class="pre">key</span></tt> functions (or older style <tt class="docutils literal"><span class="pre">compare</span></tt> functions) are supported</li>
+<li>Methods take slices and ranges where applicable</li>
+<li><a class="reference external" href="http://docs.python.org/2/library/pickle.html">Pickle</a> is supported</li>
+<li>Reverse-order <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#dictionary-view-objects">views</a> are provided</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Allows optional <a class="reference external" href="http://www.cs.cmu.edu/~avrim/451/lectures/lect0927.txt">tree augmentation</a> with additional node metadata and tree methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Dynamic order statistics allow queries for the k-th item</li>
+<li>Interval trees allow geometric querying</li>
+<li>Any user-defined algorithm can be easily plugged in</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This feature can be almost entirely ignored if all that is needed are efficient sorted drop-in replacemnt containers for Python&#8217;s sets and dicts.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Optimized implementation (see the <a class="reference external" href="http://packages.python.org/Banyan/performance.html">Performance</a> section in the online documentation):</p>
+<blockquote>
+<div><ul class="simple">
+<li>C++ templated backend drives the implementation. <a class="reference external" href="http://en.wikipedia.org/wiki/Template_metaprogramming">C++ template metaprogramming</a> is used to avoid run-time queries along the search path</li>
+<li>Homogeneous-key trees optimization</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="a-few-quick-examples">
+<h2>A Few Quick Examples<a class="headerlink" href="#a-few-quick-examples" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The following examples assume first typing:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">banyan</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<ul>
+<li><p class="first">Choose an algorithm suiting the settings, and obtain a drop-in sorted replacement for Python&#8217;s builtins:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">A (red-black tree) general drop-in replacement for Python&#8217;s set:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="mi">2</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;banyan/__init__.py&quot;</span>, line <span class="m">299</span>, in <span class="n">remove</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="gr">KeyError</span>: <span class="n">4</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">A splay-based sorted drop-in replacement for Python&#8217;s dict, optimized for temporal-locality accesses:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)],</span> <span class="n">alg</span> <span class="o">=</span> <span class="n">SPLAY_TREE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="go">[1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="mi">4</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Now access the key 2 for awhile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;e&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;f&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;g&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;b&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;e&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">A (sorted-list based) sorted memory-efficient drop in for Python&#8217;s frozenset:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">FrozenSortedSet</span><span class="p">([</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="s">&#39;jiu&#39;</span><span class="p">,</span> <span class="s">&#39;mei&#39;</span><span class="p">,</span> <span class="s">&#39;jian&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s">&#39;hao&#39;</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s">&#39;zaijian&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;zaijian&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;FrozenSortedSet&#39; object has no attribute &#39;add&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Specify the comparison criteria - e.g., use a string dictionary with lowercase comparison:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Using the newer-style <tt class="docutils literal"><span class="pre">key</span></tt> parameter:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="s">&#39;hao&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="s">&#39;Hao&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedDict({&#39;Hao&#39;: 4})</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Using the older-style (pre-Py3K) <tt class="docutils literal"><span class="pre">compare</span></tt> parameter:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">(</span><span class="n">compare</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">cmp</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">y</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="s">&#39;hao&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="s">&#39;Hao&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedDict({&#39;Hao&#39;: 4})</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>Work with ranges and slices:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">string</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">))</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Erase everything starting at &#39;e&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">t</span><span class="p">[</span><span class="s">&#39;e&#39;</span><span class="p">:</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedDict({&#39;a&#39;: &#39;A&#39;, &#39;b&#39;: &#39;B&#39;, &#39;c&#39;: &#39;C&#39;, &#39;d&#39;: &#39;D&#39;})</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># View the items between &#39;b&#39; and &#39;d&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">)</span>
+<span class="go">ItemsView([(&#39;b&#39;, &#39;B&#39;), (&#39;c&#39;, &#39;C&#39;)])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># View the values of the keys between &#39;a&#39; and &#39;c&#39;, in reverse order</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="go">ValuesView([&#39;B&#39;, &#39;A&#39;])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Set the three values of the keys between &#39;a&#39; and &#39;d&#39; to 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">:</span> <span class="s">&#39;d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedDict({&#39;a&#39;: 2, &#39;b&#39;: 2, &#39;c&#39;: 2, &#39;d&#39;: &#39;D&#39;})</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p class="first">Easily use homogeneous-keys optimization:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Simply specify the key type as key_type - no other changes are needed.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">key_type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="mi">2</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="s">&#39;jiu&#39;</span><span class="p">,</span> <span class="s">&#39;mei&#39;</span><span class="p">,</span> <span class="s">&#39;jian&#39;</span><span class="p">],</span> <span class="n">key_type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s">&#39;hola&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">t</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>Use Pythonic versions of <a class="reference external" href="http://www.cplusplus.com/reference/map/map/lower_bound/">C++/STL&#8217;s lower_bound/upper_bound</a>:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="s">&#39;jiu&#39;</span><span class="p">,</span> <span class="s">&#39;mei&#39;</span><span class="p">,</span> <span class="s">&#39;jian&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([&#39;hao&#39;, &#39;jian&#39;, &#39;jiu&#39;, &#39;mei&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s">&#39;hao&#39;</span> <span class="ow">in</span> <span class="n">t</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Find the key after &#39;hao&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">next</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+<span class="go">&#39;jian&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+<ul>
+<li><p class="first">Exploit the tree structure for additional efficient functionality:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Use an overlapping-interval updator for creating a data structure that can efficiently answer overlapping queries:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">)],</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">OverlappingIntervalsUpdator</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">overlap_point</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">overlap_point</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">[(-2, 9)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">overlap_point</span><span class="p">(</span><span class="mf">3.5</span><span class="p">))</span>
+<span class="go">[(-2, 9), (2, 4)]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">overlap</span><span class="p">((</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)))</span>
+<span class="go">[(-2, 9), (1, 3), (2, 4)]</span>
+</pre></div>
+</div>
+<p>For high performance, combine this with homogeneous-keys optimization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">(</span><span class="n">key_type</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">OverlappingIntervalsUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">overlap_point</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[(1, 3)]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">(</span><span class="n">key_type</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">OverlappingIntervalsUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">overlap_point</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="go">[(1.0, 3.0)]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Use a rank updator for creating a data structure that can efficiently answer order queries:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="s">&#39;jiu&#39;</span><span class="p">,</span> <span class="s">&#39;mei&#39;</span><span class="p">,</span> <span class="s">&#39;jian&#39;</span><span class="p">],</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">RankUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([&#39;hao&#39;, &#39;jian&#39;, &#39;jiu&#39;, &#39;mei&#39;])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># &#39;hao&#39; is item no. 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">kth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&#39;hao&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s">&#39;hao&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># &#39;mei&#39; is item no. 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">kth</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">&#39;mei&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s">&#39;mei&#39;</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Use a min-gap updator for creating a data structur that can efficiently answer smallest-gap queries:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">MinGapUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">min_gap</span><span class="p">()</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([1, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">min_gap</span><span class="p">()</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="download-installation-documentation-and-bugtracking">
+<h2>Download, Installation, Documentation, And Bugtracking<a class="headerlink" href="#download-installation-documentation-and-bugtracking" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">The package is at <a class="reference external" href="http://pypi.python.org/pypi/Banyan">PyPI</a>.</p>
+<blockquote>
+<div></div></blockquote>
+</li>
+<li><p class="first">The usual setup for Python libraries is used. Type:</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">banyan</span></tt></p>
+<p>or</p>
+<p><tt class="docutils literal"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">banyan</span></tt></p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To install this package from the source distribution, the system must have a C++ compiler installed. The setup script will invoke this compiler.</p>
+<p>Using Python 2.x on Windows will attempt to invoke Visual Studio 2008. If you are using a later version, download and extract the archive; then, from within the Banyan directory, use</p>
+<p><tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">SET</span> <span class="pre">VS90COMNTOOLS=%VS100COMNTOOLS%</span></tt></p>
+<p>or</p>
+<p><tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">SET</span> <span class="pre">VS90COMNTOOLS=%VS110COMNTOOLS%</span></tt></p>
+<p>(for Visual Studio 2010 and 2012, respectively), followed by</p>
+<p class="last"><tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt></p>
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first">The documentation is hosted at <a class="reference external" href="http://packages.python.org/Banyan/">PyPI Docs</a> and can also be found in the &#8216;docs&#8217; directory of the distribution.</p>
+<blockquote>
+<div></div></blockquote>
+</li>
+<li><p class="first">Bugtracking is on <a class="reference external" href="http://code.google.com/p/banyan/issues/list?can=1&amp;q=">Google Code</a>.</p>
+<blockquote>
+<div></div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="changes">
+<h2>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<caption>Changes</caption>
+<colgroup>
+<col width="15%" />
+<col width="15%" />
+<col width="70%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Version</th>
+<th class="head">Date</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0.1.5</td>
+<td>05/04/2013</td>
+<td>Faster red-black tree iteration; minor documentation bugfixes</td>
+</tr>
+<tr class="row-odd"><td>0.1.4</td>
+<td>01/04/2013</td>
+<td>User key-function specification optimization; performance tests for dictionary types; better warnings for user mismatched policies</td>
+</tr>
+<tr class="row-even"><td>0.1.3.5</td>
+<td>30/3/2013</td>
+<td>OverlappingIntervalsUpdator: more regression tests + performance improvements +  performance comparison tests</td>
+</tr>
+<tr class="row-odd"><td>0.1.3</td>
+<td>28/03/2013</td>
+<td>OverlappingIntervalsUpdator implemented; minor documentation bugfixes</td>
+</tr>
+<tr class="row-even"><td>0.1.2</td>
+<td>26/03/2013</td>
+<td>Efficient C++ RankUpdator and MinGapUpdator; MinMaxUpdator out; major internal simplification</td>
+</tr>
+<tr class="row-odd"><td>0.1.0</td>
+<td>17/03/2013</td>
+<td>Initial release</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="planned-features">
+<h2>Planned Features<a class="headerlink" href="#planned-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Improve documentation and performance documentation w.r.t. key-type and policy specification.</li>
+<li>Give better yet warnings for user mismatched policies</li>
+<li>Implement priority search-tree updators</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#a-few-quick-examples">A Few Quick Examples</a></li>
+<li><a class="reference internal" href="#download-installation-documentation-and-bugtracking">Download, Installation, Documentation, And Bugtracking</a></li>
+<li><a class="reference internal" href="#changes">Changes</a></li>
+<li><a class="reference internal" href="#planned-features">Planned Features</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Banyan</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="augmenting.html"
+                        title="next chapter">Augmenting Trees</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/README.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="augmenting.html" title="Augmenting Trees"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Banyan"
+             >previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ami Tavory.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

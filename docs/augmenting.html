@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Augmenting Trees &mdash; Banyan 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Banyan 0.1.5 documentation" href="index.html" />
+    <link rel="next" title="Performance" href="performance.html" />
+    <link rel="prev" title="Introduction" href="README.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="performance.html" title="Performance"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="README.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="augmenting-trees">
+<h1>Augmenting Trees<a class="headerlink" href="#augmenting-trees" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This page can be skipped if all that is needed are efficient sorted drop-in replacemnt containers for Python&#8217;s sets and dicts.</p>
+</div>
+<div class="section" id="introduction">
+<span id="augmenting-trees-chapter"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following tree, drawn rotated 90 degrees counter-clockwise (the root of the tree is 40, and the leftmost leaf is 3).</p>
+<div class="highlight-python"><pre>    /-99
+  /-96
+  | \-88
+/-73
+| | /-64
+| \-57
+|   \-54
+|     \-52
+40
+|   /-37
+| /-34
+| | \-29
+| |   \-28
+\-27
+  | /-24
+  \-20
+    \-6
+      \-3</pre>
+</div>
+<p>It is well known that some queries can be supported efficiently by augmenting each node with metadata having the property that the metadata at each node can be calculated from the metadata of its direct children. See the following <a class="reference external" href="http://www.cs.cmu.edu/~avrim/451/lectures/lect0927.txt">lecture</a>, or Chapter 14 of <a class="reference external" href="http://en.wikipedia.org/wiki/Introduction_to_Algorithms">Introduction To Algorithms</a> (3rd edition), for the specifics.</p>
+<p>E.g., consider the same tree, but with each node augmented by the size of its subtree (shown in square brackets). Then this tree can answer efficiently queries such as what is the ordinal position of this key in the set, or which is the kth key. The size of a node&#8217;s subtree can indeed be calculated by the size of the  subtrees sizes of the direct children.</p>
+<div class="highlight-python"><pre>    /-99 [ 1 ]
+  /-96 [ 3 ]
+  | \-88 [ 1 ]
+/-73 [ 8 ]
+| | /-64 [ 1 ]
+| \-57 [ 4 ]
+|   \-54 [ 2 ]
+|     \-52 [ 1 ]
+40 [ 18 ]
+|   /-37 [ 1 ]
+| /-34 [ 4 ]
+| | \-29 [ 2 ]
+| |   \-28 [ 1 ]
+\-27 [ 9 ]
+  | /-24 [ 1 ]
+  \-20 [ 4 ]
+    \-6 [ 2 ]
+      \-3 [ 1 ]</pre>
+</div>
+<p>As another example, here is the same tree, but with each node augmented by the smallest and largest keys in its subtrees (shown as a pair in square brackets). Then, obviously, this tree can answer efficiently what are the smallest and largest keys in the entire tree. Here, too, the relevant information can be calculated directly from that of the  direct children.</p>
+<div class="highlight-python"><pre>    /-99 [ (99, 99) ]
+  /-96 [ (88, 99) ]
+  | \-88 [ (88, 88) ]
+/-73 [ (52, 99) ]
+| | /-64 [ (64, 64) ]
+| \-57 [ (52, 64) ]
+|   \-54 [ (52, 54) ]
+|     \-52 [ (52, 52) ]
+40 [ (3, 99) ]
+|   /-37 [ (37, 37) ]
+| /-34 [ (28, 37) ]
+| | \-29 [ (28, 29) ]
+| |   \-28 [ (28, 28) ]
+\-27 [ (3, 37) ]
+  | /-24 [ (24, 24) ]
+  \-20 [ (3, 24) ]
+    \-6 [ (3, 6) ]
+      \-3 [ (3, 3) ]</pre>
+</div>
+</div>
+<div class="section" id="implementation-in-banyan">
+<h2>Implementation In Banyan<a class="headerlink" href="#implementation-in-banyan" title="Permalink to this headline">¶</a></h2>
+<p>The library comes with a number of <a class="reference internal" href="reference.html#predf-node-updators"><em>predefined classes</em></a>, as well as the ability to plug in new algorithms.</p>
+<div class="section" id="using-the-predefined-classes">
+<h3>Using The Predefined Classes<a class="headerlink" href="#using-the-predefined-classes" title="Permalink to this headline">¶</a></h3>
+<p>Using the <a class="reference internal" href="reference.html#predf-node-updators"><em>predefined classes</em></a> is easy. Simply specify the class as the <tt class="docutils literal"><span class="pre">updator</span></tt> parameter of a set or dict, and its methods become available as those of the set or dict. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">([</span><span class="s">&#39;hao&#39;</span><span class="p">,</span> <span class="s">&#39;jiu&#39;</span><span class="p">,</span> <span class="s">&#39;mei&#39;</span><span class="p">,</span> <span class="s">&#39;jian&#39;</span><span class="p">],</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">RankUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet[&#39;hao&#39;, &#39;jian&#39;, &#39;jiu&#39;, &#39;mei&#39;])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># &#39;hao&#39; is key no. 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">kth</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&#39;hao&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s">&#39;hao&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># &#39;mei&#39; is key no. 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">kth</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">&#39;mei&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s">&#39;mei&#39;</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">kth</span></tt> and <tt class="docutils literal"><span class="pre">order</span></tt> methods of the updator class become part of the set, in this case.</p>
+</div>
+<div class="section" id="plugging-in-new-algorithms">
+<h3>Plugging In New Algorithms<a class="headerlink" href="#plugging-in-new-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>Writing a new updator is probably best understood by an example. Following is a <tt class="docutils literal"><span class="pre">SumUpdator</span></tt> updator class, which provides the additional functionality of asking for the sum of the keys of all keys stored in a set or dict. That is, after writing the class, we will be able to use it as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">SortedSet</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">updator</span> <span class="o">=</span> <span class="n">SumUpdator</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span>
+<span class="go">SortedSet([0, 1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">sum_</span><span class="p">()</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<p>Of course, there are simpler ways to track the sum of keys in a container, and this example is just to illustrate the point of writing a new updator.</p>
+<p>The entire code of the updator is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SumUpdator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">key_fn</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">sum</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sum_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">sum</span>
+</pre></div>
+</div>
+<p>It contains two types of entries:</p>
+<ul class="simple">
+<li>A <tt class="docutils literal"><span class="pre">Metadata</span></tt> class (which must be called by this name exactly), which describes what will be augmented by each node.</li>
+<li>Any number of methods (in this case, a single one, <tt class="docutils literal"><span class="pre">sum_</span></tt>), which will be adopted by the container using this updator.</li>
+</ul>
+<p>The <tt class="docutils literal"><span class="pre">Metadata</span></tt> Class</p>
+<p>The metadata class needs to support a single method, <tt class="docutils literal"><span class="pre">update</span></tt>. This method is called with the following parameters (besides <tt class="docutils literal"><span class="pre">self</span></tt>):</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">key</span></tt> - The key in the node corresponding to this metadata.</li>
+<li><tt class="docutils literal"><span class="pre">key_fn</span></tt> - A key-comparison function; e.g., <tt class="docutils literal"><span class="pre">key_fn(a)</span> <span class="pre">&lt;</span> <span class="pre">key_fn(b)</span></tt> can be used to check if, logically, <tt class="docutils literal"><span class="pre">a</span></tt> is less than <tt class="docutils literal"><span class="pre">b</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">l</span></tt> - The metadata of the left child (<tt class="docutils literal"><span class="pre">None</span></tt> if there isn&#8217;t any).</li>
+<li><tt class="docutils literal"><span class="pre">r</span></tt> - The metadata of the right child (<tt class="docutils literal"><span class="pre">None</span></tt> if there isn&#8217;t any).</li>
+</ul>
+<p>The code of <tt class="docutils literal"><span class="pre">update</span></tt>, in this case, is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">key_fn</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">sum</span>
+</pre></div>
+</div>
+<p>The first line sets the sum using the <tt class="docutils literal"><span class="pre">key</span></tt> parameter. The next three lines add the sums of the children (if any), to the sum.</p>
+<p>The <tt class="docutils literal"><span class="pre">sum_</span></tt> method</p>
+<p>Recall that any method appearing in the updator will be adopted by the container. In this case, the code is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">sum_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">sum</span>
+</pre></div>
+</div>
+<p>and, as it becomes part of the code of the set or dict, it may access their methods and properties. In this case, the code accesses the <tt class="docutils literal"><span class="pre">root</span></tt> property, to obtain a <a class="reference internal" href="reference.html#banyan.Node" title="banyan.Node"><tt class="xref py py-class docutils literal"><span class="pre">banyan.Node</span></tt></a> object. It uses the <tt class="docutils literal"><span class="pre">metadata</span></tt> property of the node to return the sum.</p>
+</div>
+</div>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<p>Augmentation does not alter the running time of non-modifying operations (e.g., <tt class="docutils literal"><span class="pre">__contains__</span></tt>), and while it does not change the order of growth of modifying operations, it adds a multiplicative factor. For the <a class="reference internal" href="reference.html#predf-node-updators"><em>predefined classes</em></a>, the multiplicative factor is small. Due to the dynamic nature of Python, however, pure-Python augmentation incurrs a significant multiplicative factor, and is therefore primarily useful for very large trees. See the <a class="reference internal" href="performance.html#performance-updators"><em>Updators</em></a> Section in the <a class="reference internal" href="performance.html"><em>Performance</em></a> Page.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Augmenting Trees</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#implementation-in-banyan">Implementation In Banyan</a><ul>
+<li><a class="reference internal" href="#using-the-predefined-classes">Using The Predefined Classes</a></li>
+<li><a class="reference internal" href="#plugging-in-new-algorithms">Plugging In New Algorithms</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance">Performance</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="README.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="performance.html"
+                        title="next chapter">Performance</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/augmenting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="performance.html" title="Performance"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="README.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ami Tavory.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

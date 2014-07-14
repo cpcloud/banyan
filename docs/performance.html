@@ -1,0 +1,461 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Performance &mdash; Banyan 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Banyan 0.1.5 documentation" href="index.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Augmenting Trees" href="augmenting.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="augmenting.html" title="Augmenting Trees"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="performance">
+<h1>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h1>
+<p>The next table gives the well-known asymptotic running times of various operations using different mapping algorithms. Using such a table, together with experimentation, the appropriate algorithm for each setting can be found.</p>
+<table border="1" class="docutils">
+<caption>Asymptotic Running Times</caption>
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Red-Black Tree / Btree</th>
+<th class="head">Splay Tree</th>
+<th class="head">Ordered list</th>
+<th class="head">Hash</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>insertion/removal - worst case</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-odd"><td>insertion/removal - amortized worst case</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-even"><td>insertion/removal - average case</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(1)</td>
+</tr>
+<tr class="row-odd"><td>lookup - worst case</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-even"><td>lookup - amortized worst case</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-odd"><td>lookup - average case</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(log(n))</td>
+<td>O(1)</td>
+</tr>
+<tr class="row-even"><td>lookup - repeated case</td>
+<td>O(log(n))</td>
+<td>O(1)</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-odd"><td>sorted iteration</td>
+<td>O(n)</td>
+<td>O(n)</td>
+<td>O(n)</td>
+<td>O(n log(n))</td>
+</tr>
+<tr class="row-even"><td>min/max - worst case</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-odd"><td>min/max - amortized case</td>
+<td>O(log(n))</td>
+<td>O(n)</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-even"><td>erasing a k-slice - worst case</td>
+<td>O(log(n)^2 + k)</td>
+<td>O(n)</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr class="row-odd"><td>updating a k-slice - worst case</td>
+<td>O(log(n) + k)</td>
+<td>O(n)</td>
+<td>O(log(n) + k)</td>
+<td>O(n)</td>
+</tr>
+</tbody>
+</table>
+<p>The tests measure the performance of sets and dicts with integer keys. The following implementation are compared:</p>
+<ul class="simple">
+<li>banyan_red_black_tree - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> with <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">int</span></tt> or <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">str</span></tt> and <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.RED_BLACK_TREE</span></tt></li>
+<li>banyan_splay_tree - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> with <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">int</span></tt> or <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">str</span></tt> and <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.SPLAY_TREE</span></tt></li>
+<li>banyan_sorted_list - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> with <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">int</span></tt> or <tt class="docutils literal"><span class="pre">key_type</span> <span class="pre">=</span> <span class="pre">str</span></tt> and <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.SORTEDLISt</span></tt></li>
+<li>banyan_red_black_tree_gen - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> without key-type specification and <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.RED_BLACK_TREE</span></tt></li>
+<li>banyan_splay_tree_gen - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> without key-type specification and <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.SPLAY_TREE</span></tt></li>
+<li>banyan_sorted_list_gen - <a class="reference internal" href="reference.html#sorted-set-class"><em>banyan.SortedSet</em></a> or <a class="reference internal" href="reference.html#sorted-dict-class"><em>banyan.SortedDict</em></a> without key-type specification <tt class="docutils literal"><span class="pre">alg</span> <span class="pre">=</span> <span class="pre">banyan.SORTEDLISt</span></tt></li>
+<li>bintrees - A <a class="reference external" href="https://pypi.python.org/pypi/bintrees/1.0.1/">bintrees.FastRBTree</a> (V 1.0.1) red-black tree.</li>
+<li>blist - A <a class="reference external" href="http://stutzbachenterprises.com/blist/sortedset.html">blist.sortedset</a> (V 1.3.4) BTree</li>
+<li>btrees - A <a class="reference external" href="https://pypi.python.org/pypi/BTrees/4.0.5/">BTrees.OOBTree</a> (V 4.0.5) BTree</li>
+<li>bx - A <a class="reference external" href="https://pypi.python.org/pypi/bx-python">bx</a> (V 0.7.1) tree</li>
+<li>dict - <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#mapping-types-dict">Python&#8217;s (hash-based) dict</a></li>
+<li>set - <a class="reference external" href="http://docs.python.org/2/library/stdtypes.html#set-types-set-frozenset">Python&#8217;s (hash-based) set</a></li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To run the performance tests on your system, from the source directory, type</p>
+<p><tt class="docutils literal"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span> <span class="pre">performance_test</span> <span class="pre">document</span></tt></p>
+<p>or</p>
+<p class="last"><tt class="docutils literal"><span class="pre">$</span> <span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span> <span class="pre">performance_test</span> <span class="pre">document</span></tt></p>
+</div>
+<div class="section" id="collections">
+<h2>Collections<a class="headerlink" href="#collections" title="Permalink to this headline">¶</a></h2>
+<p>In general, for memory-residing mapping collections, the appropriate algorithm depends on whether sorted iteration is required (as well as similar operations described in <a class="reference internal" href="#performance-methods"><em>Methods</em></a> below, and some
+more specialized operations described in <a class="reference internal" href="#performance-updators"><em>Updators</em></a> below):</p>
+<ul class="simple">
+<li>hash-based containers work best if it isn&#8217;t.</li>
+<li>red-black tree based containers seem to work best if it is.</li>
+</ul>
+<p>There are some specialized cases where other tree-based containers are better.</p>
+<div class="section" id="sorted-vs-not">
+<h3>Sorted Vs. Not<a class="headerlink" href="#sorted-vs-not" title="Permalink to this headline">¶</a></h3>
+<p>From the table above, it is apparent that hash-based containers are basically O(1) on lookup/insertion/removal operations, whereas trees are basically O(log(n)). Conversely, iterating in order over a hash-based container is generally O(n long(n)), wherease trees are O(n). Thus, if a combination of modifications and sorted iteration is required, trees are a good choice; otherwise, a hash-based container is a better choice.</p>
+<ul>
+<li><p class="first">Hash-based containers are not very well suited for combinations of modifying containers and iterating over their items in sorted order, even if the iterations are relatively infrequent.</p>
+<p>The following figure shows the running time of inserting integers one by one into a dict and iterating in sorted order after every insertion, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_sort.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_sort.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntDictInsertSortCompetitive.png" src="_images/IntDictInsertSortCompetitive.png" />
+</div>
+</li>
+</ul>
+<blockquote>
+<div><blockquote>
+<div>(see <a class="reference internal" href="insert_sort_performance.html"><em>Insert-Sort Performance</em></a> for fuller versions and discussion.)</div></blockquote>
+<ul>
+<li><p class="first">Without sorted iteration, for simple lookup or modification, the situation is reversed: hash-based containers do better than tree-based containers.</p>
+<blockquote>
+<div><ul class="simple">
+<li>The following figure shows the running time of finding a key in a set  as a function of the size of the set (see <a class="reference download internal" href="_downloads/_set_find.py"><tt class="xref download docutils literal"><span class="pre">_set_find.py</span></tt></a> for the source):</li>
+</ul>
+<div class="figure">
+<img alt="_images/IntSetFindCompetitive.png" src="_images/IntSetFindCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="find_performance.html"><em>Find Performance</em></a> for fuller versions and discussion.)</p>
+<ul class="simple">
+<li>The following figure shows the running time of inserting integers and then erasing them, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_erase.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_erase.py</span></tt></a> for the source):</li>
+</ul>
+<div class="figure">
+<img alt="_images/IntSetInsertEraseCompetitive.png" src="_images/IntSetInsertEraseCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="insert_erase_performance.html"><em>Insert-Erase Performance</em></a> for fuller versions and discussion.)</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="static-vs-dynamic">
+<h3>Static Vs. Dynamic<a class="headerlink" href="#static-vs-dynamic" title="Permalink to this headline">¶</a></h3>
+<p>Sorted lists are just about the most memory-efficient mapping containers possible. In addition, they are well suited for non-modifying operations: creation, lookup, and iteration; from the table above it is apparent that they are far less suited for modifying operations.</p>
+<p><tt class="docutils literal"><span class="pre">banyan.SORTED_LIST</span></tt> is the default algorithm for <a class="reference internal" href="reference.html#frozen-sorted-set-class"><em>banyan.FrozenSortedSet</em></a>
+and <a class="reference internal" href="reference.html#frozen-sorted-dict-class"><em>banyan.FrozenSortedDict</em></a>, but this algorithm might also be appropriate for cases where updates are allowed, but are relatively infrequent.</p>
+<ul>
+<li><p class="first">Sorted lists do well for non-modiying operations:</p>
+<blockquote>
+<div><blockquote>
+<div><ul>
+<li><p class="first">The following figure shows the running time of creating a set of integers as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_create.py"><tt class="xref download docutils literal"><span class="pre">_set_create.py</span></tt></a> for the source):</p>
+<blockquote>
+<div><div class="figure">
+<img alt="_images/IntSetCreateCompetitiveWithSortedList.png" src="_images/IntSetCreateCompetitiveWithSortedList.png" />
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>(see <a class="reference internal" href="create_performance.html"><em>Creation Performance</em></a> for fuller versions and discussion.)</p>
+<blockquote>
+<div><ul>
+<li><p class="first">The following figure shows the running time of iterating over a set&#8217;s integers in sorted order as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_it.py"><tt class="xref download docutils literal"><span class="pre">_set_it.py</span></tt></a> for the source):</p>
+<blockquote>
+<div><div class="figure">
+<img alt="_images/IntSetItCompetitiveWithSortedList.png" src="_images/IntSetItCompetitiveWithSortedList.png" />
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>(see <a class="reference internal" href="it_performance.html"><em>Sorted Iteration Performance</em></a> for fuller versions and discussion.)</p>
+<blockquote>
+<div><ul>
+<li><p class="first">The following figure shows the running time of finding each integer in a set, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_find.py"><tt class="xref download docutils literal"><span class="pre">_set_find.py</span></tt></a> for the source):</p>
+<blockquote>
+<div><div class="figure">
+<img alt="_images/IntSetFindCompetitiveWithSortedList.png" src="_images/IntSetFindCompetitiveWithSortedList.png" />
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>(see <a class="reference internal" href="find_performance.html"><em>Find Performance</em></a> for fuller versions and discussion.)</p>
+</div></blockquote>
+</li>
+<li><p class="first">Sorted lists do not do well for modiying operations. The following figure shows the running time of inserting integers and then erasing them, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_erase.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_erase.py</span></tt></a> for the source):</p>
+<blockquote>
+<div><div class="figure">
+<img alt="_images/IntSetInsertEraseCompetitiveWithSortedList.png" src="_images/IntSetInsertEraseCompetitiveWithSortedList.png" />
+</div>
+<p>(see <a class="reference internal" href="insert_erase_performance.html"><em>Insert-Erase Performance</em></a> for fuller versions and discussion.)</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="random-access-vs-time-local">
+<h3>Random Access Vs. Time Local<a class="headerlink" href="#random-access-vs-time-local" title="Permalink to this headline">¶</a></h3>
+<p>In some settings, keys are accessed completely randomly. In other settings, at most time periods, only a small set of keys is access. In the latter settings, splay-based trees have some advantages. In the former settings, they do not balance trees as well as red-black trees, and, more importantly, they require about twice as many comparisons per search.</p>
+<ul>
+<li><p class="first">The following figure shows the running time of finding integers such that first one integer is found repeatedly, then the next one, and so forth, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_find_local.py"><tt class="xref download docutils literal"><span class="pre">_set_find_local.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntSetFindLocalCompetitive.png" src="_images/IntSetFindLocalCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="find_local_performance.html"><em>Local-Find Performance</em></a> for fuller versions and discussion.)</p>
+</li>
+<li><p class="first">The following figure shows the running time of finding integers one after another, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_erase.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_erase.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntSetFindNonlocal.png" src="_images/IntSetFindNonlocal.png" />
+</div>
+<p>(see <a class="reference internal" href="find_performance.html"><em>Find Performance</em></a> for fuller versions and discussion.)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="methods">
+<span id="performance-methods"></span><h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p>Naturally, tree-based containers are efficient for operations pertaining to specific key ranges, but the appropriate methods need to be used.</p>
+<div class="section" id="erasing-slices">
+<h3>Erasing Slices<a class="headerlink" href="#erasing-slices" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible to earse all keys in a range from a set by creating a new set without those keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">t</span> <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="n">begin</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="n">end</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This has linear complexity, however. In general, balanced trees support efficient split and join operations, and such erases can be more efficiently implemented using them. This is the rationale for an extended <tt class="docutils literal"><span class="pre">remove</span></tt> for sets:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and an extended <tt class="docutils literal"><span class="pre">del</span></tt> for dicts:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">t</span><span class="p">[</span><span class="n">begin</span><span class="p">:</span> <span class="n">end</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The following figure shows the running time of erasing a fixed-size slice in a set  as a function of the size of the set (see <a class="reference download internal" href="_downloads/_set_erase_slice.py"><tt class="xref download docutils literal"><span class="pre">_set_erase_slice.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntSetEraseSliceCompetitive.png" src="_images/IntSetEraseSliceCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="erase_slice_performance.html"><em>Erase-Slice Performance</em></a> for fuller versions and discussion.)</p>
+</div>
+<div class="section" id="updating-slices">
+<h3>Updating Slices<a class="headerlink" href="#updating-slices" title="Permalink to this headline">¶</a></h3>
+<p>Just as in the previous point, slices can be updated more efficiently and clearly than by iterating over all items. For example: here is a linear-complexity method to increment the values of all keys in a range:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">begin</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">end</span> <span class="k">else</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>In a search tree, this can be replaced with the more efficient version:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="n">begin</span><span class="p">:</span> <span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">t</span><span class="p">[</span><span class="n">begin</span><span class="p">:</span> <span class="n">end</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>which performs some logarithmic operations for finding the range boundaries, and iteration over the slice.</p>
+<p>The following figure shows the running time of updating a fixed-size slice in a set  as a function of the size of the set (see <a class="reference download internal" href="_downloads/_dict_update_slice.py"><tt class="xref download docutils literal"><span class="pre">_dict_update_slice.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntDictUpdateSliceCompetitive.png" src="_images/IntDictUpdateSliceCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="update_slice_performance.html"><em>Update-Slice Performance</em></a> for fuller versions and discussion.)</p>
+</div>
+</div>
+<div class="section" id="updators">
+<span id="performance-updators"></span><h2>Updators<a class="headerlink" href="#updators" title="Permalink to this headline">¶</a></h2>
+<p>Trees can be <a class="reference external" href="http://www.cs.cmu.edu/~avrim/451/lectures/lect0927.txt">augmented</a> to support new functionality efficiently (see <a class="reference internal" href="augmenting.html"><em>Augmenting Trees</em></a> for a detailed explanation).</p>
+<div class="section" id="overlappingintervalsupdator">
+<h3>OverlappingIntervalsUpdator<a class="headerlink" href="#overlappingintervalsupdator" title="Permalink to this headline">¶</a></h3>
+<p>The following figure shows the running time of inserting integer intervals one by one into a set and, and finding the
+intervals overlapping the inserted interval after each insertion, as a function of the number of intervals (see <a class="reference download internal" href="_downloads/_set_insert_overlapping_intervals.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_overlapping_intervals.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntSetInsertOverlappingCompetitive.png" src="_images/IntSetInsertOverlappingCompetitive.png" />
+</div>
+<p>(see <a class="reference internal" href="insert_overlapping_performance.html"><em>Insert-Overlapping Performance</em></a> for fuller versions and discussion.)</p>
+<p><a class="reference external" href="https://pypi.python.org/pypi/bx-python">bx</a> is a package dedicated towards these types of operations, and Banyan uses an updator on a regular red-black tree. If k intervals overlap an interval, the complexity of finding them using either implementation is only k log(n).</p>
+</div>
+<div class="section" id="rankupdator">
+<h3>RankUpdator<a class="headerlink" href="#rankupdator" title="Permalink to this headline">¶</a></h3>
+<p>The following figure shows the running time of inserting integers one by one into a set and, and finding the rank of the inserted integer in the set after each insertion, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_rank.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_rank.py</span></tt></a> for the source):</p>
+<div class="figure">
+<img alt="_images/IntSetInsertRankCompetitiveWithRankUpdator.png" src="_images/IntSetInsertRankCompetitiveWithRankUpdator.png" />
+</div>
+<p>(see <a class="reference internal" href="insert_rank_performance.html"><em>Insert-Overlapping Performance</em></a> for fuller versions and discussion.)</p>
+</div>
+<div class="section" id="mingapupdator">
+<h3>MinGapUpdator<a class="headerlink" href="#mingapupdator" title="Permalink to this headline">¶</a></h3>
+<p>The following figure shows the running time of inserting integers one by one into a set and, and finding the minimum gap of the inserted integers in the set after each insertion, as a function of the number of integers (see <a class="reference download internal" href="_downloads/_set_insert_min_gap.py"><tt class="xref download docutils literal"><span class="pre">_set_insert_min_gap.py</span></tt></a> for the source).</p>
+<div class="figure">
+<img alt="_images/IntSetInsertMinGapCompetitiveWithMinGapUpdator.png" src="_images/IntSetInsertMinGapCompetitiveWithMinGapUpdator.png" />
+</div>
+<p>(see <a class="reference internal" href="insert_min_gap_performance.html"><em>Insert-MinGap Performance</em></a> for fuller versions and discussion.)</p>
+</div>
+<div class="section" id="note-about-updators-and-performance">
+<h3>Note About Updators And Performance<a class="headerlink" href="#note-about-updators-and-performance" title="Permalink to this headline">¶</a></h3>
+<p>Augmentation does not alter the running time of non-modifying operations (e.g., <tt class="docutils literal"><span class="pre">__contains__</span></tt>), and while it does not change the order of growth of modifying operations, it adds a multiplicative factor. For the <a class="reference internal" href="reference.html#predf-node-updators"><em>predefined classes</em></a>, the multiplicative factor is small. Due to the dynamic nature of Python, however, pure-Python augmentation incurrs a significant multiplicative factor, and is therefore primarily useful for very large trees.</p>
+<p>The following figure shows the find time of a tree with an updator; it is unaffected:</p>
+<div class="figure">
+<img alt="_images/IntSetFindCompetitiveWithRankUpdator.png" src="_images/IntSetFindCompetitiveWithRankUpdator.png" />
+</div>
+<p>The following figure shows the modification time of a tree with an updator; due to the dynamic nature of Python, it is somewhat adversely affected:</p>
+<div class="figure">
+<img alt="_images/IntSetInsertEraseCompetitiveWithRankUpdator.png" src="_images/IntSetInsertEraseCompetitiveWithRankUpdator.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Performance</a><ul>
+<li><a class="reference internal" href="#collections">Collections</a><ul>
+<li><a class="reference internal" href="#sorted-vs-not">Sorted Vs. Not</a></li>
+<li><a class="reference internal" href="#static-vs-dynamic">Static Vs. Dynamic</a></li>
+<li><a class="reference internal" href="#random-access-vs-time-local">Random Access Vs. Time Local</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#methods">Methods</a><ul>
+<li><a class="reference internal" href="#erasing-slices">Erasing Slices</a></li>
+<li><a class="reference internal" href="#updating-slices">Updating Slices</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#updators">Updators</a><ul>
+<li><a class="reference internal" href="#overlappingintervalsupdator">OverlappingIntervalsUpdator</a></li>
+<li><a class="reference internal" href="#rankupdator">RankUpdator</a></li>
+<li><a class="reference internal" href="#mingapupdator">MinGapUpdator</a></li>
+<li><a class="reference internal" href="#note-about-updators-and-performance">Note About Updators And Performance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="augmenting.html"
+                        title="previous chapter">Augmenting Trees</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="reference.html"
+                        title="next chapter">Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/performance.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="augmenting.html" title="Augmenting Trees"
+             >previous</a> |</li>
+        <li><a href="index.html">Banyan 0.1.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ami Tavory.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
