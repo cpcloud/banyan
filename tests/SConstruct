@@ -1,0 +1,14 @@
+import os
+
+env = Environment(
+    CPPPATH = '../banyan/_dsa',
+    CPPFLAGS = '-pg -O2',
+    LINKFLAGS = '-pg',
+    ENV = {'PATH' : os.environ['PATH'],
+    'TERM' : os.environ['TERM'],
+    'HOME' : os.environ['HOME']})
+env.Program('test', env.Object('test.o', source = 'test.cpp'))
+
+debug_env = env.Clone(CPPFLAGS = '-g -DBANYAN_DEBUG')
+debug_env.Program('debug_test', debug_env.Object('debug_test.o', source = 'test.cpp'))
+
